@@ -156,6 +156,7 @@ import org.telegram.ui.Components.BatteryDrawable;
 import org.telegram.ui.Components.BlockingUpdateView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.ChatRecorder;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.Easings;
 import org.telegram.ui.Components.EmbedBottomSheet;
@@ -6272,6 +6273,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ChatRecorder.GlobalNotifier.notifyPermissionResult(requestCode, permissions, grantResults);
+        ChatRecorder.GlobalNotifier.destroyPermissionCallback();
         if (!checkPermissionsResult(requestCode, permissions, grantResults)) return;
         if (ApplicationLoader.applicationLoaderInstance != null && ApplicationLoader.applicationLoaderInstance.checkRequestPermissionResult(requestCode, permissions, grantResults)) return;
 
@@ -6342,6 +6345,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             PhotoViewer.getInstance().onPause();
         }
         StoryRecorder.onPause();
+        ChatRecorder.GlobalNotifier.notifyOnPause();
 
         if (VoIPFragment.getInstance() != null) {
             VoIPFragment.onPause();
@@ -6503,6 +6507,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             PhotoViewer.getInstance().onResume();
         }
         StoryRecorder.onResume();
+        ChatRecorder.GlobalNotifier.notifyOnResume();
         PipRoundVideoView pipRoundVideoView = PipRoundVideoView.getInstance();
         if (pipRoundVideoView != null && MediaController.getInstance().isMessagePaused()) {
             MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();

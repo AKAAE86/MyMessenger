@@ -746,7 +746,7 @@ public class CaptionContainerView extends FrameLayout {
 
     }
 
-    protected boolean captionLimitToast() {
+    public boolean captionLimitToast() {
         return false;
     }
 

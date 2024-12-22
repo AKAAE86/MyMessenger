@@ -80,6 +80,10 @@ public class RecordControl extends View implements FlashViews.Invertable {
         invalidate();
     }
 
+    public void setUnlimitedVideoRecord(boolean unlimitedVideoRecord) {
+        this.unlimitedVideoRecord = unlimitedVideoRecord;
+    }
+
     public void setDelegate(Delegate delegate) {
         this.delegate = delegate;
     }
@@ -280,6 +284,7 @@ public class RecordControl extends View implements FlashViews.Invertable {
     private final AnimatedFloat startModeIsVideoT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private float overrideStartModeIsVideoT = -1;
     private boolean startModeIsVideo = true;
+    private boolean unlimitedVideoRecord = false;
 
     private final AnimatedFloat recordingT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private final AnimatedFloat recordingLongT = new AnimatedFloat(this, 0, 850, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -434,6 +439,7 @@ public class RecordControl extends View implements FlashViews.Invertable {
 
         long duration = System.currentTimeMillis() - recordingStart;
         float recordEndT = recording ? 0 : 1f - recordingLongT;
+        boolean drawSweepAngle = !unlimitedVideoRecord;
         float sweepAngle = duration / (float) MAX_DURATION * 360;
 
         float recordingLoading = this.recordingLoadingT.set(this.recordingLoading);
@@ -441,9 +447,9 @@ public class RecordControl extends View implements FlashViews.Invertable {
         outlineFilledPaint.setStrokeWidth(strokeWidth);
         outlineFilledPaint.setAlpha((int) (0xFF * Math.max(.7f * recordingLoading, 1f - recordEndT)));
 
-        if (recordingLoading <= 0) {
+        if (drawSweepAngle && recordingLoading <= 0) {
             canvas.drawArc(AndroidUtilities.rectTmp, -90, sweepAngle, false, outlineFilledPaint);
-        } else {
+        } else if (recordingLoading > 0) {
             final long now = SystemClock.elapsedRealtime();
             CircularProgressDrawable.getSegments((now - recordingLoadingStart) % 5400, loadingSegments);
             invalidate();
@@ -466,7 +472,7 @@ public class RecordControl extends View implements FlashViews.Invertable {
             if (duration / 1000L != lastDuration / 1000L) {
                 delegate.onVideoDuration(duration / 1000L);
             }
-            if (duration >= MAX_DURATION) {
+            if (drawSweepAngle && duration >= MAX_DURATION) {
                 post(() -> {
                     recording = false;
                     longpressRecording = false;

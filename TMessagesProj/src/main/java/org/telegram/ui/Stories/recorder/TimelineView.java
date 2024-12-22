@@ -69,7 +69,7 @@ public class TimelineView extends View {
     // maximum allowed duration to select
     public static final long MAX_SELECT_DURATION = (long) (59 * 1000L);
 
-    interface TimelineDelegate {
+    public interface TimelineDelegate {
         default void onProgressDragChange(boolean dragging) {};
         default void onProgressChange(long progress, boolean fast) {};
 

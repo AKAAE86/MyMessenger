@@ -801,7 +801,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     private View shadow;
 
-    private ChatAttachAlertPhotoLayout photoLayout;
+    private BaseChatAttachAlertPhotoLayout photoLayout;
     private ChatAttachAlertContactsLayout contactsLayout;
     private ChatAttachAlertAudioLayout audioLayout;
     private ChatAttachAlertPollLayout pollLayout;
@@ -2198,10 +2198,17 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         return;
                     }
                     entry.editedInfo = videoEditedInfo;
-                    ChatAttachAlertPhotoLayout.selectedPhotosOrder.clear();
-                    ChatAttachAlertPhotoLayout.selectedPhotos.clear();
-                    ChatAttachAlertPhotoLayout.selectedPhotosOrder.add(0);
-                    ChatAttachAlertPhotoLayout.selectedPhotos.put(0, entry);
+                    if (photoLayout instanceof ChatAttachAlertPhotoLayoutEnhanced) {
+                        ChatAttachAlertPhotoLayoutEnhanced.selectedPhotosOrder.clear();
+                        ChatAttachAlertPhotoLayoutEnhanced.selectedPhotos.clear();
+                        ChatAttachAlertPhotoLayoutEnhanced.selectedPhotosOrder.add(0);
+                        ChatAttachAlertPhotoLayoutEnhanced.selectedPhotos.put(0, entry);
+                    } else {
+                        ChatAttachAlertPhotoLayout.selectedPhotosOrder.clear();
+                        ChatAttachAlertPhotoLayout.selectedPhotos.clear();
+                        ChatAttachAlertPhotoLayout.selectedPhotosOrder.add(0);
+                        ChatAttachAlertPhotoLayout.selectedPhotos.put(0, entry);
+                    }
                     delegate.didPressedButton(7, true, notify, scheduleDate, 0, isCaptionAbove(), forceDocument);
                 }
             }, baseFragment instanceof ChatActivity ? (ChatActivity) baseFragment : null);
@@ -2290,7 +2297,11 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
         headerView.addView(mediaPreviewView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT));
 
-        layouts[0] = photoLayout = new ChatAttachAlertPhotoLayout(this, context, forceDarkTheme, needCamera, resourcesProvider);
+        if (baseFragment instanceof ChatActivity) {
+            layouts[0] = photoLayout = new ChatAttachAlertPhotoLayoutEnhanced(this, context, forceDarkTheme, needCamera, resourcesProvider);
+        } else {
+            layouts[0] = photoLayout = new ChatAttachAlertPhotoLayout(this, context, forceDarkTheme, needCamera, resourcesProvider);
+        }
         photoLayout.setTranslationX(0);
         currentAttachLayout = photoLayout;
         selectedId = 1;
@@ -3881,8 +3892,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             int width = Math.max(nextAttachLayout.getWidth(), currentAttachLayout.getWidth());
             if (nextAttachLayout instanceof ChatAttachAlertPhotoLayoutPreview) {
                 nextAttachLayout.setTranslationX(width);
-                if (currentAttachLayout instanceof ChatAttachAlertPhotoLayout) {
-                    ChatAttachAlertPhotoLayout photoLayout = (ChatAttachAlertPhotoLayout) currentAttachLayout;
+                if (currentAttachLayout instanceof BaseChatAttachAlertPhotoLayout) {
+                    BaseChatAttachAlertPhotoLayout photoLayout = (BaseChatAttachAlertPhotoLayout) currentAttachLayout;
                     if (photoLayout.cameraView != null) {
                         photoLayout.cameraView.setVisibility(View.INVISIBLE);
                         photoLayout.cameraIcon.setVisibility(View.INVISIBLE);
@@ -3892,7 +3903,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             } else {
                 currentAttachLayout.setTranslationX(-width);
                 if (nextAttachLayout == photoLayout) {
-                    ChatAttachAlertPhotoLayout photoLayout = (ChatAttachAlertPhotoLayout) nextAttachLayout;
+                    BaseChatAttachAlertPhotoLayout photoLayout = (BaseChatAttachAlertPhotoLayout) nextAttachLayout;
                     if (photoLayout.cameraView != null) {
                         photoLayout.cameraView.setVisibility(View.VISIBLE);
                         photoLayout.cameraIcon.setVisibility(View.VISIBLE);
@@ -5254,7 +5265,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         openWithFrontFaceCamera = value;
     }
 
-    public ChatAttachAlertPhotoLayout getPhotoLayout() {
+    public BaseChatAttachAlertPhotoLayout getPhotoLayout() {
         return photoLayout;
     }
 

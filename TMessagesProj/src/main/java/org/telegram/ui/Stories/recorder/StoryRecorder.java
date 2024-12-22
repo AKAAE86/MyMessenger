@@ -24,7 +24,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Insets;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Outline;
@@ -57,7 +56,6 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -2286,7 +2284,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             }
 
             @Override
-            protected boolean captionLimitToast() {
+            public boolean captionLimitToast() {
                 if (MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
                     return false;
                 }
@@ -4921,7 +4919,57 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             outputEntry == null ? null : outputEntry.file,
             outputEntry != null && outputEntry.isVideo,
             outputEntry != null && outputEntry.botId != 0,
-            windowView,
+                new IWindowView() {
+                    @Override
+                    public void addView(View child, ViewGroup.LayoutParams layoutParams) {
+                        windowView.addView(child, layoutParams);
+                    }
+
+                    @Override
+                    public void addView(View child) {
+                        windowView.addView(child);
+                    }
+
+                    @Override
+                    public void invalidate() {
+                        windowView.invalidate();
+                    }
+
+                    @Override
+                    public void drawBlurBitmap(Bitmap bitmap, float amount) {
+                        windowView.drawBlurBitmap(bitmap, amount);
+                    }
+
+                    @Override
+                    public int getPaddingUnderContainer() {
+                        return windowView.getPaddingUnderContainer();
+                    }
+
+                    @Override
+                    public int getMeasuredHeight() {
+                        return windowView.getMeasuredHeight();
+                    }
+
+                    @Override
+                    public int getMeasuredWidth() {
+                        return windowView.getMeasuredWidth();
+                    }
+
+                    @Override
+                    public int getBottomPadding2() {
+                        return windowView.getBottomPadding2();
+                    }
+
+                    @Override
+                    public void removeView(View view) {
+                        windowView.removeView(view);
+                    }
+
+                    @Override
+                    public View asView() {
+                        return windowView;
+                    }
+                },
             activity,
             currentAccount,
             paintViewBitmap,
@@ -6155,10 +6203,6 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 cameraView = null;
             }
         }
-    }
-
-    public interface Touchable {
-        boolean onTouch(MotionEvent event);
     }
 
     private Touchable previewTouchable;

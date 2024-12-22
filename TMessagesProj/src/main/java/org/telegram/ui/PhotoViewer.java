@@ -6277,7 +6277,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
 
             @Override
-            protected boolean captionLimitToast() {
+            public boolean captionLimitToast() {
                 if (limitBulletin != null && Bulletin.getVisibleBulletin() == limitBulletin) {
                     return false;
                 }
@@ -6404,7 +6404,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
 
             @Override
-            protected boolean captionLimitToast() {
+            public boolean captionLimitToast() {
                 if (limitBulletin != null && Bulletin.getVisibleBulletin() == limitBulletin) {
                     return false;
                 }

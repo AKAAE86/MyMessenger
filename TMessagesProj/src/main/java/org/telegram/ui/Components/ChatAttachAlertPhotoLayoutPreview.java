@@ -13,7 +13,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -37,7 +36,6 @@ import android.view.animation.Interpolator;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,7 +59,6 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatActionCell;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.spoilers.SpoilerEffect;
 import org.telegram.ui.Components.spoilers.SpoilerEffect2;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
@@ -211,14 +208,14 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
     }
 
     private ViewPropertyAnimator headerAnimator;
-    private ChatAttachAlertPhotoLayout photoLayout;
+    private BaseChatAttachAlertPhotoLayout photoLayout;
     private boolean shown = false;
 
     @Override
     public void onShow(ChatAttachAlert.AttachAlertLayout previousLayout) {
         shown = true;
-        if (previousLayout instanceof ChatAttachAlertPhotoLayout) {
-            this.photoLayout = (ChatAttachAlertPhotoLayout) previousLayout;
+        if (previousLayout instanceof BaseChatAttachAlertPhotoLayout) {
+            this.photoLayout = (BaseChatAttachAlertPhotoLayout) previousLayout;
             groupsView.deletedPhotos.clear();
             groupsView.fromPhotoLayout(photoLayout);
             groupsView.requestLayout();
@@ -915,9 +912,9 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
     @Override
     public void onSelectedItemsCountChanged(int count) {
         if (count > 1) {
-            parentAlert.selectedMenuItem.showSubItem(ChatAttachAlertPhotoLayout.group);
+            parentAlert.selectedMenuItem.showSubItem(BaseChatAttachAlertPhotoLayout.group);
         } else {
-            parentAlert.selectedMenuItem.hideSubItem(ChatAttachAlertPhotoLayout.group);
+            parentAlert.selectedMenuItem.hideSubItem(BaseChatAttachAlertPhotoLayout.group);
         }
     }
 
@@ -963,7 +960,7 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
             }
         }
 
-        public void fromPhotoLayout(ChatAttachAlertPhotoLayout photoLayout) {
+        public void fromPhotoLayout(BaseChatAttachAlertPhotoLayout photoLayout) {
             photosOrder = photoLayout.getSelectedPhotosOrder();
             photosMap = photoLayout.getSelectedPhotos();
             fromPhotoArrays();
@@ -1049,7 +1046,7 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
             }
         }
 
-        public void toPhotoLayout(ChatAttachAlertPhotoLayout photoLayout, boolean updateLayout) {
+        public void toPhotoLayout(BaseChatAttachAlertPhotoLayout photoLayout, boolean updateLayout) {
             int previousCount = photoLayout.getSelectedPhotosOrder().size();
             calcPhotoArrays();
 
